@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Click the Circle Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #0f172a;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 10px;
+    }
+
+    #score, #timer {
+      font-size: 20px;
+      margin: 5px;
+    }
+
+    #circle {
+  width: 80px;
+  height: 80px;
+  background: #22c55e;
+  border-radius: 50%;
+  position: absolute;
+  cursor: pointer;
+
+  box-shadow: 0 0 20px #22c55e, 0 0 40px #22c55e88;
+  transition: transform 0.08s ease, box-shadow 0.2s ease;
+}
+
+#circle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px #4ade80, 0 0 60px #4ade8088;
+}
+
+#circle:active {
+  transform: scale(0.85);
+  box-shadow: 0 0 10px #16a34a;
+}
+
+  </style>
+</head>
+<body>
+
+  <h1>Click the Circle!</h1>
+  <div id="score">Score: 0</div>
+  <div id="highScore">High Score: 0</div>
+  <div id="timer">Time: 30</div>
+  <button id="startBtn" style="margin-top:10px; padding:8px 16px; font-size:16px;">
+  Start Game
+</button>
+  <button id="restartBtn" style="display:none; margin-top:10px; padding:8px 16px; font-size:16px;">
+  Restart
+</button>
+
+
+  <div id="circle"></div>
+
+<script>
+  let score = 0;
+  let timeLeft = 30;
+  let gameRunning = false;
+
+  let moveInterval = 500;
+  const restTime = 280;
+
+  let moverTimeout;
+  let timer;
+
+  let highScore = localStorage.getItem("circleHighScore") || 0;
+
+  const circle = document.getElementById("circle");
+  const scoreDisplay = document.getElementById("score");
+  const highScoreDisplay = document.getElementById("highScore");
+  const timerDisplay = document.getElementById("timer");
+  const restartBtn = document.getElementById("restartBtn");
+  const startBtn = document.getElementById("startBtn");
+
+  highScoreDisplay.textContent = "High Score: " + highScore;
+
+  // hide circle initially
+  circle.style.display = "none";
+
+  function moveCircle() {
+    const uiHeight = 160;
+
+    const maxX = window.innerWidth - 80;
+    const maxY = window.innerHeight - 80 - uiHeight;
+
+    const randomX = Math.random() * maxX;
+    const randomY = Math.random() * maxY + uiHeight;
+
+    circle.style.left = randomX + "px";
+    circle.style.top = randomY + "px";
+  }
+
+  function scheduleNextMove() {
+    if (!gameRunning) return;
+
+    moverTimeout = setTimeout(() => {
+      circle.style.pointerEvents = "none";
+      moveCircle();
+
+      setTimeout(() => {
+        if (!gameRunning) return;
+
+        circle.style.pointerEvents = "auto";
+        scheduleNextMove();
+      }, restTime);
+
+    }, moveInterval);
+  }
+
+  circle.addEventListener("click", () => {
+    if (!gameRunning) return;
+
+    score++;
+    scoreDisplay.textContent = "Score: " + score;
+  });
+
+  function countdown() {
+    timeLeft--;
+    timerDisplay.textContent = "Time: " + timeLeft;
+
+    if (timeLeft % 5 === 0 && moveInterval > 250) {
+      moveInterval -= 50;
+    }
+
+    if (timeLeft <= 0) {
+      endGame();
+    }
+  }
+
+  function startGame() {
+    score = 0;
+    timeLeft = 30;
+    moveInterval = 500;
+    gameRunning = true;
+
+    scoreDisplay.textContent = "Score: 0";
+    timerDisplay.textContent = "Time: 30";
+
+    startBtn.style.display = "none";
+    restartBtn.style.display = "none";
+    circle.style.display = "block";
+
+    scheduleNextMove();
+    timer = setInterval(countdown, 1000);
+  }
+
+  function endGame() {
+    gameRunning = false;
+    circle.style.display = "none";
+    timerDisplay.textContent = "Game Over!";
+    restartBtn.style.display = "inline-block";
+
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem("circleHighScore", highScore);
+      highScoreDisplay.textContent = "High Score: " + highScore;
+    }
+
+    clearTimeout(moverTimeout);
+    clearInterval(timer);
+  }
+
+  function restartGame() {
+    startGame();
+  }
+
+  startBtn.addEventListener("click", startGame);
+  restartBtn.addEventListener("click", restartGame);
+</script>
+
+
+
+
+
+
+
+</body>
+</html>
