@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Click the Circle Game</title>
   <style>
     body {
@@ -10,6 +12,7 @@
       color: white;
       font-family: Arial, sans-serif;
       text-align: center;
+      touch-action: none;
     }
 
     h1 {
@@ -21,16 +24,27 @@
       margin: 5px;
     }
 
-    #circle {
-  width: 80px;
-  height: 80px;
+   #circle {
+  width: 14vw;
+  height: 14vw;
+  min-width: 60px;
+  min-height: 60px;
+  max-width: 90px;
+  max-height: 90px;
+
   background: #22c55e;
   border-radius: 50%;
   position: absolute;
   cursor: pointer;
 
-  box-shadow: 0 0 20px #22c55e, 0 0 40px #22c55e88;
+  box-shadow: 0 0 18px #22c55e, 0 0 36px #22c55e88;
   transition: transform 0.08s ease, box-shadow 0.2s ease;
+  touch-action: manipulation;
+}
+
+#circle:active {
+  transform: scale(0.85);
+  box-shadow: 0 0 10px #16a34a;
 }
 
 #circle:hover {
@@ -42,6 +56,12 @@
   transform: scale(0.85);
   box-shadow: 0 0 10px #16a34a;
 }
+    button, select {
+  font-size: 16px;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+
 
   </style>
 </head>
@@ -51,6 +71,15 @@
   <div id="score">Score: 0</div>
   <div id="highScore">High Score: 0</div>
   <div id="timer">Time: 30</div>
+  <div style="margin-top:10px;">
+  Difficulty:
+  <select id="difficultySelect" style="padding:4px 8px; font-size:14px;">
+    <option value="easy">Easy</option>
+    <option value="medium" selected>Medium</option>
+    <option value="hard">Hard</option>
+  </select>
+</div>
+
   <button id="startBtn" style="margin-top:10px; padding:8px 16px; font-size:16px;">
   Start Game
 </button>
@@ -87,7 +116,8 @@
   circle.style.display = "none";
 
   function moveCircle() {
-    const uiHeight = 160;
+    const uiHeight = window.innerWidth < 600 ? 260 : 200;
+
 
     const maxX = window.innerWidth - 80;
     const maxY = window.innerHeight - 80 - uiHeight;
@@ -185,3 +215,4 @@
 
 </body>
 </html>
+
